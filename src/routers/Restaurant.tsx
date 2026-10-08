@@ -16,13 +16,18 @@ const RestaurantLoader = async ({ params }) => {
     menus: []
   }
 
-  await Promise.all([fetchRestaurants, fetchMenus])
-  .then(async response => {
-    datas.restaurants = await response[0].json()
-    .then(e => e.restaurants)
-    datas.menus = await response[1].json()
-    .then(e => e.menus)
-  })
+  try {
+    await Promise.all([fetchRestaurants, fetchMenus])
+    .then(async response => {
+      if (response.some(r => !r.ok)) throw new Error('Falha ao carregar dados')
+      datas.restaurants = await response[0].json()
+      .then(e => e.restaurants)
+      datas.menus = await response[1].json()
+      .then(e => e.menus)
+    })
+  } catch {
+    throw new Response('Não foi possível carregar os dados do restaurante', { status: 503 })
+  }
 
   const restaurant = datas.restaurants.find(r => r.id == params.id)
   const menus = datas.menus.filter(m => m.restaurantId == restaurant?.id)
