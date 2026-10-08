@@ -16,16 +16,22 @@ const RestaurantLoader = async ({ params }) => {
     menus: []
   }
 
-  await Promise.all([fetchRestaurants, fetchMenus])
-  .then(async response => {
-    datas.restaurants = await response[0].json()
-    .then(e => e.restaurants)
-    datas.menus = await response[1].json()
-    .then(e => e.menus)
-  })
+  try {
+    await Promise.all([fetchRestaurants, fetchMenus])
+    .then(async response => {
+      if (response.some(r => !r.ok)) throw new Error('Falha ao carregar dados')
+      datas.restaurants = await response[0].json()
+      .then(e => e.restaurants)
+      datas.menus = await response[1].json()
+      .then(e => e.menus)
+    })
+  } catch {
+    throw new Response('Não foi possível carregar os dados do restaurante', { status: 503 })
+  }
 
   const restaurant = datas.restaurants.find(r => r.id == params.id)
-  const menus = datas.menus.filter(m => m.restaurantId == restaurant?.id)
+  if (!restaurant) throw new Response('Restaurante não encontrado', { status: 404 })
+  const menus = datas.menus.filter(m => m.restaurantId == restaurant.id)
 
   return { restaurant, menus } as LoaderRestaurant
 }
@@ -48,7 +54,7 @@ const daysWeekOpen = (hours: Hours) => {
   let week: string = ''
 
   if (daysWeek.length == 0) week = ''
-  if (daysWeek.length <= 1) week = `${daysWeek[0]}: ${hours.from} às ${hours.to}`
+  else if (daysWeek.length <= 1) week = `${daysWeek[0]}: ${hours.from} às ${hours.to}`
   else week = `${daysWeek[0]} à ${daysWeek[daysWeek.length-1]}:  ${hours.from} às ${hours.to}`
 
   const text: TextHours = {
@@ -131,7 +137,7 @@ const RestaurantPage: React.FC = () => {
                       </div>
                       <div className="grid md:grid-cols-2 grid-cols-1 md:max-w-none max-w-lg m-auto gap-4 font-mont">
                         {
-                          showGroups === i && fillterMenu.map(menu => (
+                          showGroups === i && fillterMenu.filter(menu => menu.category === g).map(menu => (
                               <>
                                 <CardCardapio menu={menu} menuModal={setOpenModal} key={menu.restaurantId} />
                               </>
