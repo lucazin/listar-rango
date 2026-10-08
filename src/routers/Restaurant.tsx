@@ -136,7 +136,7 @@ const RestaurantPage: React.FC = () => {
                       </div>
                       <div className="grid md:grid-cols-2 grid-cols-1 md:max-w-none max-w-lg m-auto gap-4 font-mont">
                         {
-                          showGroups === i && fillterMenu.map(menu => (
+                          showGroups === i && fillterMenu.filter(menu => menu.category === g).map(menu => (
                               <>
                                 <CardCardapio menu={menu} menuModal={setOpenModal} key={menu.restaurantId} />
                               </>
