@@ -53,7 +53,7 @@ const daysWeekOpen = (hours: Hours) => {
   let week: string = ''
 
   if (daysWeek.length == 0) week = ''
-  if (daysWeek.length <= 1) week = `${daysWeek[0]}: ${hours.from} às ${hours.to}`
+  else if (daysWeek.length <= 1) week = `${daysWeek[0]}: ${hours.from} às ${hours.to}`
   else week = `${daysWeek[0]} à ${daysWeek[daysWeek.length-1]}:  ${hours.from} às ${hours.to}`
 
   const text: TextHours = {
