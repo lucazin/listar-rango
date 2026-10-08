@@ -12,7 +12,7 @@ const Modal: React.FC<PropsModal> = ({ menu }) => {
 
   const handleSetValue = (description: string) => {
     if (description === 'increment') setAdd(add + 1) 
-    if (description === 'decrement') setAdd(add - 1)
+    if (description === 'decrement') setAdd(value => Math.max(1, value - 1))
   }
 
   useEffect(() => {

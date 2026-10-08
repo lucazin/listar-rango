@@ -3,8 +3,14 @@ import { Link } from "react-router-dom"
 import { Restaurant, PropsCardListRestaurant } from "../interfaces"
 
 const CardListRestaurant: React.FC<PropsCardListRestaurant> = ({ restaurant }) => {
-  const week = new Date().getDay()
-  const open = restaurant.hours[0].days.includes(week)
+  const now = new Date()
+  const week = now.getDay()
+  const currentMinutes = now.getHours() * 60 + now.getMinutes()
+  const opening = restaurant.hours[0].opening.split(":")
+  const closing = restaurant.hours[0].closing.split(":")
+  const open = restaurant.hours[0].days.includes(week) &&
+    currentMinutes >= Number(opening[0]) * 60 + Number(opening[1]) &&
+    currentMinutes <= Number(closing[0]) * 60 + Number(closing[1])
   const colorOpen = open ? "bg-[#2B0D61]" : "bg-[#B5ABD4]"
 
   return (
