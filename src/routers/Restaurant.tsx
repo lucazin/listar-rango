@@ -30,7 +30,8 @@ const RestaurantLoader = async ({ params }) => {
   }
 
   const restaurant = datas.restaurants.find(r => r.id == params.id)
-  const menus = datas.menus.filter(m => m.restaurantId == restaurant?.id)
+  if (!restaurant) throw new Response('Restaurante não encontrado', { status: 404 })
+  const menus = datas.menus.filter(m => m.restaurantId == restaurant.id)
 
   return { restaurant, menus } as LoaderRestaurant
 }
